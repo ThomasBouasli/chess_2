@@ -1,0 +1,76 @@
+use std::fmt::Display;
+
+use crate::{color::Color, piece::Piece, board::relative_position::RelativePosition};
+
+pub struct Knight{
+    color: Color,
+}
+
+impl Piece for Knight {
+
+    fn new(color: Color) -> Self where Self: Sized {
+        return Knight{
+            color,
+        };
+    }
+
+    fn color(&self) -> &Color {
+        return &self.color;
+    }
+
+    fn icon(&self) -> &str {
+        return "♞";
+    }
+
+    fn name(&self) -> &str {
+        return "Knight";
+    }
+
+    fn prefix(&self) -> &str {
+        return "N";
+    }
+
+    fn value(&self) -> u8 {
+        return 3;
+    }
+
+    fn is_valid_move(&self, position: &RelativePosition) -> bool {
+        return (position.file().abs() == 2 && position.rank().abs() == 1) || (position.file().abs() == 1 && position.rank().abs() == 2);
+    }
+
+    fn is_valid_capture(&self, position: &RelativePosition) -> bool {
+        return self.is_valid_move(position);
+    }
+
+    fn is_valid_play(&self, position: &RelativePosition) -> bool {
+        return self.is_valid_move(position);
+    }
+
+    fn possible_captures(&self) -> Vec<RelativePosition> {
+        return self.possible_moves();
+    }
+
+    fn possible_moves(&self) -> Vec<RelativePosition> {
+        let mut moves = Vec::new();
+        
+        for file in -2i8..=2 {
+            for rank in -2i8..=2 {
+                if file.abs() != rank.abs() && file != 0 && rank != 0 {
+                    moves.push(RelativePosition::new(file, rank));
+                }
+            }
+        }
+
+        return moves;
+    }
+
+    fn possible_plays(&self) -> Vec<RelativePosition> {
+        return self.possible_moves()
+    }
+}
+
+impl Display for Knight {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        return write!(f, "N");
+    }
+}
