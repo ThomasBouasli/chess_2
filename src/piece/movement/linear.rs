@@ -27,10 +27,15 @@ pub trait LinearMovement{
     /// 
     fn linear_moves(&self) -> Vec<RelativePosition> {
         let mut moves = Vec::new();
-        for file in -7..8 {
-            for rank in -7..8 {
-                if self.is_valid_linear_move(&RelativePosition::new(file, rank)) {
-                    moves.push(RelativePosition::new(file, rank));
+        for file in -7..=7 {
+            for rank in -7..=7 {
+                let position = match RelativePosition::new(file, rank){
+                    Ok(position) => position,
+                    Err(_) => panic!("Invalid position")
+                };
+
+                if self.is_valid_linear_move(&position) {
+                    moves.push(position);
                 }
             }
         }
@@ -51,7 +56,7 @@ pub trait LinearMovement{
     /// 
     /// let dummy_piece = DummyPiece{};
     /// 
-    /// let movement = RelativePosition::new(1, 0);
+    /// let movement = RelativePosition::new(1, 0).unwrap();
     /// 
     /// assert_eq!(dummy_piece.is_valid_linear_move(&movement), true);
     /// ```

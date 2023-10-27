@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use colored::Colorize;
+
 use crate::{color::Color, piece::Piece, board::relative_position::RelativePosition};
 
 pub struct Knight{
@@ -56,7 +58,11 @@ impl Piece for Knight {
         for file in -2i8..=2 {
             for rank in -2i8..=2 {
                 if file.abs() != rank.abs() && file != 0 && rank != 0 {
-                    moves.push(RelativePosition::new(file, rank));
+                    let position = match RelativePosition::new(file, rank){
+                        Ok(position) => position,
+                        Err(_) => panic!("Invalid position")
+                    };
+                    moves.push(position);
                 }
             }
         }
@@ -71,6 +77,14 @@ impl Piece for Knight {
 
 impl Display for Knight {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        return write!(f, "N");
+        let mut string = format!("N");
+
+        match self.color() {
+            Color::White => string = string.green().to_string(),
+            Color::Black => string = string.red().to_string(),
+        };
+
+
+        return write!(f, "{}", string);
     }
 }

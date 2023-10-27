@@ -32,7 +32,7 @@ impl Tile {
     pub fn remove_piece(&mut self) -> Result<Box<dyn Piece>, String> {
         return match self.piece.take() {
             Some(piece) => Ok(piece),
-            None => Err(String::from("Tile is empty")),
+            None => Err(String::from(format!("Cannot remove piece from empty tile at position {}", self.position))),
         }
     }
 }

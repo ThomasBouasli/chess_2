@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use colored::Colorize;
+
 use crate::{color::Color, piece::{Piece, movement::linear::LinearMovement}, board::relative_position::RelativePosition};
 
 pub struct Rook{
@@ -68,6 +70,14 @@ impl LinearMovement for Rook{}
 
 impl Display for Rook {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        return write!(f, "R");
+        let mut string = format!("R");
+
+        match self.color() {
+            Color::White => string = string.green().to_string(),
+            Color::Black => string = string.red().to_string(),
+        };
+
+
+        return write!(f, "{}", string);
     }
 }

@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use colored::Colorize;
+
 use crate::{color::Color, piece::{Piece, movement::diagonal::DiagonalMovement}, board::relative_position::RelativePosition};
 
 pub struct Bishop{
@@ -63,6 +65,14 @@ impl DiagonalMovement for Bishop{}
 
 impl Display for Bishop {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        return write!(f, "B");
+        let mut string = format!("B");
+
+        match self.color() {
+            Color::White => string = string.green().to_string(),
+            Color::Black => string = string.red().to_string(),
+        };
+
+
+        return write!(f, "{}", string);
     }
 }

@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use colored::Colorize;
+
 use crate::{color::Color, piece::{Piece, movement::{diagonal::DiagonalMovement, linear::LinearMovement}}, board::relative_position::RelativePosition};
 
 pub struct Queen{
@@ -70,6 +72,14 @@ impl LinearMovement for Queen {}
 
 impl Display for Queen {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        return write!(f, "Q");
+        let mut string = format!("Q");
+
+        match self.color() {
+            Color::White => string = string.green().to_string(),
+            Color::Black => string = string.red().to_string(),
+        };
+
+
+        return write!(f, "{}", string);
     }
 }

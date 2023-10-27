@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use colored::Colorize;
+
 use crate::{color::Color, piece::{Piece, movement::{diagonal::DiagonalMovement, linear::LinearMovement}}, board::relative_position::RelativePosition};
 
 pub struct King{
@@ -72,17 +74,25 @@ impl Piece for King {
 
 impl DiagonalMovement for King{
     fn is_valid_diagonal_move(&self, position: &RelativePosition) -> bool {
-        return position.file().abs() == position.rank().abs() && position.file() == 1;
+        return position.file().abs() == position.rank().abs() && position.file().abs() == 1;
     }
 }
 impl LinearMovement for King {
     fn is_valid_linear_move(&self, position: &RelativePosition) -> bool {
-        return (position.file() == 0 && position.rank() == 1) || (position.file() == 1 && position.rank() == 0);
+        return (position.file() == 0 && position.rank().abs() == 1) || (position.file().abs() == 1 && position.rank() == 0);
     }
 }
 
 impl Display for King {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        return write!(f, "K");
+        let mut string = format!("K");
+
+        match self.color() {
+            Color::White => string = string.green().to_string(),
+            Color::Black => string = string.red().to_string(),
+        };
+
+
+        return write!(f, "{}", string);
     }
 }

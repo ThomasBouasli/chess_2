@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 
 #[derive(PartialEq, Eq, Debug)]
 pub enum CastleRights{
@@ -35,6 +37,17 @@ impl CastleRights {
                 }
             },
             CastleRights::None => return CastleRights::None,
+        }
+    }
+}
+
+impl Display for CastleRights {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            CastleRights::QueenSide => write!(f, "QueenSide"),
+            CastleRights::KingSide => write!(f, "KingSide"),
+            CastleRights::Both => write!(f, "Both"),
+            CastleRights::None => write!(f, "None"),
         }
     }
 }

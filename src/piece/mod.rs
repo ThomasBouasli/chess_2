@@ -30,46 +30,63 @@ pub trait Piece : Display{
     fn possible_plays(&self) -> Vec<RelativePosition>;
     fn possible_moves(&self) -> Vec<RelativePosition>;
     fn possible_captures(&self) -> Vec<RelativePosition>;
-    fn will_colide(&self, board: &Board, from : &Position, to: &Position) -> bool {
+    fn will_colide(&self, board: &Board, from : &Position, to: &Position) -> Result<(), String>{
 
-        let relative_position = RelativePosition::from_absolute(from, to);
+        let relative_position = match RelativePosition::from_absolute(from, to){
+            Ok(relative_position) => relative_position,
+            Err(_) => panic!("Invalid relative position")
+        };
         
         let is_diagonal = relative_position.file().abs() == relative_position.rank().abs();
 
         if is_diagonal{
-            for i in from.file()+1..to.file() {
-                let position = Position::new(i, i);
+            let file_signum = relative_position.file().signum();
+            let rank_signum = relative_position.rank().signum();
+
+            for i in 1..relative_position.file().abs() {
+
+                let file : u8 = (from.file() as i8 + i * file_signum) as u8;
+                let rank : u8 = (from.rank() as i8 + i * rank_signum) as u8;
+
+                let position = match Position::new(file, rank){
+                    Ok(position) => position,
+                    Err(e) => return Err(e)
+                };
+
                 let piece = board.get_piece_at(&position);
-                if piece.is_some() {
-                    return true;
+                
+                match piece {
+                    Some(piece) => return Err(format!("Piece {} at {} will colide with {} at {} to move to {}", self.name(), position, piece.name(), from, to)),
+                    None => {}
                 }
             }
         }
 
-        let is_linear_rank = relative_position.file() == 0;
+        let is_linear_rank = relative_position.file() == 0 && relative_position.rank() != 0 || relative_position.file() != 0 && relative_position.rank() == 0;
 
-        if is_linear_rank {
-            for i in from.rank()+1..to.rank() {
-                let position = Position::new(from.file(), i);
+        if is_linear_rank{
+            let file_signum = relative_position.file().signum();
+            let rank_signum = relative_position.rank().signum();
+
+            for i in 1..relative_position.file().abs() + relative_position.rank().abs() {
+
+                let file : u8 = (from.file() as i8 + i * file_signum) as u8;
+                let rank : u8 = (from.rank() as i8 + i * rank_signum) as u8;
+
+                let position = match Position::new(file, rank){
+                    Ok(position) => position,
+                    Err(e) => return Err(e)
+                };
+
                 let piece = board.get_piece_at(&position);
-                if piece.is_some() {
-                    return true;
+                
+                match piece {
+                    Some(piece) => return Err(format!("{} at {} will colide with {} at {} to move to {}", self.name(), from, piece.name(), position, to)),
+                    None => {}
                 }
             }
         }
-
-        let is_linear_file = relative_position.rank() == 0;
-
-        if is_linear_file {
-            for i in from.file()+1..to.file() {
-                let position = Position::new(i, from.rank());
-                let piece = board.get_piece_at(&position);
-                if piece.is_some() {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        
+        return Ok(());
     }
 }

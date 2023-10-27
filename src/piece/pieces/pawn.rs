@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use colored::Colorize;
+
 use crate::{color::Color, piece::Piece, board::relative_position::RelativePosition};
 
 pub struct Pawn{
@@ -72,19 +74,19 @@ impl Piece for Pawn {
     }
 
     fn possible_captures(&self) -> Vec<RelativePosition> {
-        return self.possible_moves();
+        let mut captures = Vec::new();
+
+        captures.push(RelativePosition::new(1, self.rank_multiplier()).unwrap());
+        captures.push(RelativePosition::new(-1, self.rank_multiplier()).unwrap());
+
+        return captures;
     }
 
     fn possible_moves(&self) -> Vec<RelativePosition> {
         let mut moves = Vec::new();
         
-        for file in -2i8..=2 {
-            for rank in -2i8..=2 {
-                if file.abs() != rank.abs() && file != 0 && rank != 0 {
-                    moves.push(RelativePosition::new(file, rank));
-                }
-            }
-        }
+        moves.push(RelativePosition::new(0, self.rank_multiplier()).unwrap());
+        moves.push(RelativePosition::new(0, self.rank_multiplier() * 2).unwrap());
 
         return moves;
     }
@@ -96,6 +98,14 @@ impl Piece for Pawn {
 
 impl Display for Pawn {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        return write!(f, "P");
+        let mut string = format!("P");
+
+        match self.color() {
+            Color::White => string = string.green().to_string(),
+            Color::Black => string = string.red().to_string(),
+        };
+
+
+        return write!(f, "{}", string);
     }
 }
